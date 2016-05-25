@@ -4,6 +4,7 @@ This project is part of NUBOMEDIA
 http://www.nubomedia.eu/
 
 **On the Server Side**
+
 First install git and then checkout from GitHub with the following
 
 ```bash
