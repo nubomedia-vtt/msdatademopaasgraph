@@ -53,6 +53,7 @@ https://github.com/nubomedia-vtt/msdatademopaasgraph.git
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <spring-boot.version>1.2.1.RELEASE</spring-boot.version>    
+    <nubomedia-media-client.version>1.0.2</nubomedia-media-client.version>
   </properties>
   
   <dependencies>
@@ -77,6 +78,12 @@ https://github.com/nubomedia-vtt/msdatademopaasgraph.git
       <groupId>org.kurento</groupId>
       <artifactId>kurento-utils-js</artifactId>
       <version>6.2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.fhg.fokus.nubomedia</groupId>
+      <artifactId>nubomedia-media-client</artifactId>
+      <version>${nubomedia-media-client.version}</version>
     </dependency>
 
   </dependencies>
