@@ -34,7 +34,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class MsDataApp implements WebSocketConfigurer {
 
-    static final String DEFAULT_APP_SERVER_URL = "https://localhost:8443";
+    //    static final String DEFAULT_APP_SERVER_URL = "https://localhost:8443";
 
     //final static String DEFAULT_KMS_WS_URI = "ws://localhost:8888/kurento";
     //final static String DEFAULT_APP_SERVER_URL = "http://localhost:8080";
@@ -43,13 +43,13 @@ public class MsDataApp implements WebSocketConfigurer {
   public MsDataHandler handler() {
     return new MsDataHandler();
   }
-
+    /*
   @Bean
   public KurentoClient kurentoClient() {
       System.err.println("\nMSDATA APP kurentoClient 8080");
     return KurentoClient.create();
   }
-
+    */
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry.addHandler(handler(), "/metadata");
