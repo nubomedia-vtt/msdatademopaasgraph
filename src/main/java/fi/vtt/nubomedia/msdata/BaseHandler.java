@@ -49,8 +49,6 @@ public abstract class BaseHandler extends TextWebSocketHandler implements Module
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message)
 	throws Exception {
-	log.debug("ME HadleTextMsg");
-	
 	JsonObject jsonMessage = gson.fromJson(message.getPayload(),
 					       JsonObject.class);
 	
@@ -104,7 +102,6 @@ public abstract class BaseHandler extends TextWebSocketHandler implements Module
     private void onIceCandidate(WebSocketSession session, JsonObject jsonMessage) {
 	JsonObject jsonCandidate = jsonMessage.get("candidate").getAsJsonObject();
 	UserSession user = users.get(session.getId());
-	System.err.println("ME onIce: " + user);
 	if (user != null) {
 	    user.addCandidate(jsonCandidate);
 	}

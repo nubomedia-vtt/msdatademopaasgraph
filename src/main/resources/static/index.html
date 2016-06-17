@@ -23,7 +23,7 @@
 
 <script src="js/kurento-utils.js"></script>
 <script src="js/index.js"></script>
-<title>Multisensory Data Demo</title>
+<title>MsData Graph</title>
 </head>
 
 <body>
@@ -33,11 +33,14 @@
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse"
 						data-target=".navbar-collapse"></button>
-					<a class="navbar-brand" href=".">Kurento Tutorial</a>
+					<a class="navbar-brand" href="">MsData</a>
 				</div>
 				<div class="collapse navbar-collapse"
 					id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
+						<li><a
+							href="https://github.com/Kurento/kurento-tutorial-java/tree/master/kurento-show-data-channel"><span
+								class="glyphicon glyphicon-file"></span> Source Code</a></li>
 					</ul>
 				</div>
 			</div>
@@ -46,33 +49,46 @@
 	<div class="container">
 		<div class="page-header">
 			<h1>Multisensory Data</h1>
+<!--
+			<p>
+				This application shows an example on the use of <b>WebRTC Data
+					Channels</b> with Kurento. The <a href="img/pipeline.png"
+					data-toggle="lightbox" data-title="WebRTC Show Data Channels"
+					data-footer="A WebRtcEndpoint is connected to a KmsShowData.">Media
+					Pipeline</a> is composed by a <i>WebRtcEndpoint</i> connected to a <i>KmsShowData</i>.
+				This Media Element is a test element aimed to show the capabilities
+				of Kurento Media Server for Data Channels. Internally it is able to
+				read the data received on the Data Channels. In addition it uses a <i>GStreamerFilter</i>
+				configured to overlay the read text in the media stream. Finally,
+				the <i>KmsShowData</i> is connected again to the same <i>WebRtcEndpoint</i>,
+				closing the loopback. In the client side the WebRtcPeer is setup in
+				receive-only mode, and the user is able to introduce text that is
+				sent to the server by means of Data Channels Metadata. To run this
+				demo follow these steps:
+			</p>
+-->
+			<ol>
+				<li>Open this page with a browser compliant with WebRTC and
+					click on <i>Start</i> button.
+				</li>
+				<li>Write number on the text area labeled as <i>Number to
+						be sent</i> and click on <i>Send</i> button
+				</li>
+				<li>This number should be sent to the server and overlayed on the
+					remote stream as a graph.</li>
+				<li>Click on <i>Stop</i> to finish the communication.
+				</li>
+			</ol>
 		</div>
-
-
-
-<div class="row" align="left">
-	&nbsp; &nbsp; <input id="videoE2Elatency" type="checkbox" required name="terms" onchange="show_latency()"><span id="testVideoE2Elatency">  VideoE2ELatency (ms): </span>  
-      </div>
-
-
-<div class="form-group">
-
-<label id="labeltester" for="tester">Faces</label>
-<div class="btn-group" id="tester">
-  <button type="button" class="btn btn-primary" onclick="changeTester()"><span class="glyphicon glyphicon-forward"></span></button>
-
-
-</div>
-</div>
-
-
-
-
 		<div class="row">
 			<div class="col-md-5">
 				<h3>Local stream</h3>
 				<video id="videoInput" autoplay width="480px" height="360px"
 					poster="img/webrtc.png"></video>
+				<br> <label class="control-label" for="dataChannelSend">Number
+					to be sent</label><br>
+				<textarea id="dataChannelSend" class="form-control" disabled
+					style="height: 100px;" placeholder="Enter the text to send"></textarea>
 			</div>
 			<div class="col-md-2">
 				<a id="start" href="#" class="btn btn-success"
@@ -80,17 +96,16 @@
 					class="glyphicon glyphicon-play"></span> Start</a><br /> <br /> <a
 					id="stop" href="#" class="btn btn-danger"
 					onclick="stop(); return false;"><span
-					class="glyphicon glyphicon-stop"></span> Stop</a>
+					class="glyphicon glyphicon-stop"></span> Stop</a> <br /> <br /> <br />
+				<a id="send" href="#" class="btn btn-primary"> <span
+					class="glyphicon glyphicon-forward"></span> Send
+				</a>
 			</div>
 			<div class="col-md-5">
 				<h3>Remote stream</h3>
 				<video id="videoOutput" autoplay width="480px" height="360px"
 					poster="img/webrtc.png"></video>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<label class="control-label" for="console">Console</label><br>
+				<br> <label class="control-label" for="console">Console</label><br>
 				<br>
 				<div id="console" class="democonsole">
 					<ul></ul>

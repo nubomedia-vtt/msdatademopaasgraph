@@ -1,19 +1,21 @@
 /*
  * (C) Copyright 2014 Kurento (http://kurento.org/)
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
-var ws = new WebSocket('wss://' + location.host + '/metadata');
+var ws = new WebSocket('wss://' + location.host + '/msdata');
 var videoInput;
 var videoOutput;
 var webRtcPeer;
@@ -22,6 +24,12 @@ var state = null;
 const I_CAN_START = 0;
 const I_CAN_STOP = 1;
 const I_AM_STARTING = 2;
+
+var chanId = 0;
+
+function getChannelName () {
+	return "TestChannel" + chanId++;
+}
 
 window.onload = function() {
 	console = new Console();
@@ -61,7 +69,7 @@ ws.onmessage = function(message) {
 		if (state == I_AM_STARTING) {
 			setState(I_CAN_START);
 		}
-		onError('Unrecognized message', parsedMessage);
+	onError('Unrecognized message', parsedMessage);
 	}
 }
 
@@ -71,32 +79,48 @@ function start() {
 	setState(I_AM_STARTING);
 	showSpinner(videoInput, videoOutput);
 
+	var dataChannelSend = document.getElementById('dataChannelSend');
+
+	var sendButton = document.getElementById('send');
+	sendButton.addEventListener("click", function() {
+		var data = dataChannelSend.value;
+		console.log("Send button pressed. Sending data " + data);
+		webRtcPeer.send(data);
+		dataChannelSend.value = "";
+	});
+
+	function onOpen(event) {
+		dataChannelSend.disabled = false;
+		dataChannelSend.focus();
+		$('#send').attr('disabled', false);
+	}
+
+	function onClosed(event) {
+		dataChannelSend.disabled = true;
+		$('#send').attr('disabled', true);
+	}
+
 	console.log("Creating WebRtcPeer and generating local sdp offer ...");
 
 	var options = {
-		localVideo : videoInput,
-		remoteVideo : videoOutput,
-		onicecandidate : onIceCandidate
+			localVideo : videoInput,
+			remoteVideo : videoOutput,
+			dataChannelConfig: {
+				id : getChannelName(),
+				onopen : onOpen,
+				onclose : onClosed
+			},
+			dataChannels : true,
+			onicecandidate : onIceCandidate
 	}
+
 	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
 			function(error) {
-				if (error) {
-					return console.error(error);
-				}
-				webRtcPeer.generateOffer(onOffer);
-			});
-}
-
-function onOfferChange(error, offerSdp) {
-	if (error)
-		return console.error("Error generating the offer");
-	console.info('Invoking SDP offer callback function ' + location.host);
-	var message = {
-		id : 'tester',
-		sdpOffer : offerSdp,
-	    tester : flipFlop
-	}
-	sendMessage(message);
+		if (error) {
+			return console.error(error);
+		}
+		webRtcPeer.generateOffer(onOffer);
+	});
 }
 
 function onOffer(error, offerSdp) {
@@ -104,9 +128,8 @@ function onOffer(error, offerSdp) {
 		return console.error("Error generating the offer");
 	console.info('Invoking SDP offer callback function ' + location.host);
 	var message = {
-		id : 'start',
-		sdpOffer : offerSdp,
-	    tester : flipFlop
+			id : 'start',
+			sdpOffer : offerSdp
 	}
 	sendMessage(message);
 }
@@ -119,8 +142,8 @@ function onIceCandidate(candidate) {
 	console.log("Local candidate" + JSON.stringify(candidate));
 
 	var message = {
-		id : 'onIceCandidate',
-		candidate : candidate
+			id : 'onIceCandidate',
+			candidate : candidate
 	};
 	sendMessage(message);
 }
@@ -139,69 +162,17 @@ function stop() {
 	console.log("Stopping video call ...");
 	setState(I_CAN_START);
 	if (webRtcPeer) {
+
 		webRtcPeer.dispose();
 		webRtcPeer = null;
 
 		var message = {
-			id : 'stop'
+				id : 'stop'
 		}
 		sendMessage(message);
 	}
 	hideSpinner(videoInput, videoOutput);
 }
-
-
-var flipFlop = 1;
-function changeTester(typeId){    
-
-    if(flipFlop){
-    document.getElementById('labeltester').innerHTML = "Faces";
-}
-    else{
-    document.getElementById('labeltester').innerHTML = "Charts";
-}
-
-    flipFlop = !flipFlop;
-
-
-stop();
-start();
-
-/*
-	setState(I_CAN_START);
-	if (webRtcPeer) {
-		webRtcPeer.dispose();
-		webRtcPeer = null;
-
-		var message = {
-			id : 'stop'
-		}
-		sendMessage(message);
-	}
-
-
-	var options = {
-		localVideo : videoInput,
-		remoteVideo : videoOutput,
-		onicecandidate : onIceCandidate
-	}
-	webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
-			function(error) {
-				if (error) {
-					return console.error(error);
-				}
-				webRtcPeer.generateOffer(onOfferChange);
-			});
-*/
-/*
-    var message = {
-	id : 'tester',
-	tester : flipFlop,
-    }
-    sendMessage(message);
-*/
-}
-
 
 function setState(nextState) {
 	switch (nextState) {
@@ -227,7 +198,7 @@ function setState(nextState) {
 
 	default:
 		onError("Unknown state " + nextState);
-		return;
+	return;
 	}
 	state = nextState;
 }
@@ -252,30 +223,6 @@ function hideSpinner() {
 		arguments[i].style.background = '';
 	}
 }
-
-function show_latency()
-{
-    if ( document.getElementById('videoE2Elatency').checked) {
-	timerId = setInterval(get_stats,1000);
-    }
-    else {
-	document.getElementById('testVideoE2Elatency').innerHTML = "  VideoE2ELatency (ms): ";
-	clearInterval(timerId);
-    }
-
-}
-
-function get_stats()
-{
-    var message = {
-	id : 'get_stats',
-	val: ''
-    };
-
-    sendMessage(message);
-}
-
-
 /**
  * Lightbox utility (to display media pipeline image in a modal dialog)
  */

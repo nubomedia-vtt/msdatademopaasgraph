@@ -83,7 +83,9 @@ public class UserSession {
 	mediaPipeline.setLatencyStats(true);
 	log.info("Media Pipeline {} latencyStants set{}", mediaPipeline.getId(), mediaPipeline.getLatencyStats());
 	
-	webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
+	webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).useDataChannels().build();
+
+	//webRtcEndpoint = new WebRtcEndpoint.Builder(mediaPipeline).build();
 	handler.createPipeline(this, jsonMessage);
 	
 	// WebRTC negotiation

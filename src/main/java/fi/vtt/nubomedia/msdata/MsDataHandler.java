@@ -25,9 +25,7 @@ import org.kurento.client.WebRtcEndpoint;
 import java.util.Map;
 import java.util.Set;
 import org.kurento.jsonrpc.JsonUtils;
-import org.kurento.module.msdatamodule.*;
-import org.kurento.module.msdatamodule.KmsGGD;
-import org.kurento.module.msdatamodule.KmsSGD;
+import org.kurento.module.msdata.KmsMsData;
 import java.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,35 +45,16 @@ import com.google.gson.JsonObject;
 public class MsDataHandler extends BaseHandler {
 
   private final Logger log = LoggerFactory.getLogger(MsDataHandler.class);
-  private static final Gson gson = new GsonBuilder().create();
-
-  @Override
-  public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-      JsonObject jsonMessage = gson.fromJson(message.getPayload(), JsonObject.class);           
-
-      switch (jsonMessage.get("id").getAsString()) {
-	  /*
-      case "tester": 
-	  System.err.println("CHANGE TESTER");
-	  changeTester(session, jsonMessage);      
-	  break;
-	  */      
-      default:
-	  super.handleTextMessage(session, message);
-	  break;
-      }
-  }
 
     public void createPipeline(UserSession userSession, JsonObject jsonMessage){
 	try{
 	    WebRtcEndpoint webRtcEndpoint = userSession.getWebRtcEndpoint();	    
 	    MediaPipeline mediaPipeline = userSession.getMediaPipeline();
 	   	    
-	    KmsSGD showFaces = new KmsSGD.Builder(mediaPipeline).build();
-	    KmsGGD detectFaces = new KmsGGD.Builder(mediaPipeline).build();
-	    webRtcEndpoint.connect(detectFaces);
-	    detectFaces.connect(showFaces);
-	    showFaces.connect(webRtcEndpoint);	    
+	    // Media logic
+	    KmsMsData kmsMsData = new KmsMsData.Builder(mediaPipeline).build();
+	    webRtcEndpoint.connect(kmsMsData);
+	    kmsMsData.connect(webRtcEndpoint);	    
 	} 
 	catch(Exception e){
 	    throw new RuntimeException(e);

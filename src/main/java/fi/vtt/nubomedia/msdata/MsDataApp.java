@@ -24,35 +24,22 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 /**
- * Magic Mirror main class.
+ * MsData main class.
  *
- * @author Boni Garcia (bgarcia@gsyc.es)
- * @author David Fernandez (d.fernandezlop@gmail.com)
+ * @author Markus Ylikerala
  * @since 6.1.1
  */
 @SpringBootApplication
 @EnableWebSocket
 public class MsDataApp implements WebSocketConfigurer {
-
-    //    static final String DEFAULT_APP_SERVER_URL = "https://localhost:8443";
-
-    //final static String DEFAULT_KMS_WS_URI = "ws://localhost:8888/kurento";
-    //final static String DEFAULT_APP_SERVER_URL = "http://localhost:8080";
-
   @Bean
   public MsDataHandler handler() {
     return new MsDataHandler();
   }
-    /*
-  @Bean
-  public KurentoClient kurentoClient() {
-      System.err.println("\nMSDATA APP kurentoClient 8080");
-    return KurentoClient.create();
-  }
-    */
+
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(handler(), "/metadata");
+    registry.addHandler(handler(), "/msdata");
   }
 
   public static void main(String[] args) throws Exception {
